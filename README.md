@@ -4,6 +4,7 @@ Application de caisse virtuelle pour les braderie, représentations commerçante
 ## Stack
 
 - Front : [Nuxt](https://nuxt.com) (Vue 3) + [Pinia](https://pinia.vuejs.org) + PWA (`@vite-pwa/nuxt`)
+- Icônes : [lucide-vue-next](https://lucide.dev) — convention de nommage `[NomDeLIcon]Icon` (ex: `import { ShoppingCartIcon } from 'lucide-vue-next'`)
 - Données : Supabase (Postgres + Auth)
 - Hébergement : Netlify
 

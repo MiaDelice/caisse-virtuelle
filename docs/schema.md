@@ -68,6 +68,13 @@ Pas de colonne `total` stockée : dérivée de `order_lines` (`SUM(quantity * pr
 - **`order_lines` utilise une PK composite `(order_id, item_id)`**, pas d'UUID indépendant : dérive naturellement de l'UUID déjà unique de `order_id`, pas de risque de collision offline.
 - **Montants en `numeric(10,2)`, pas `float`** : évite les erreurs d'arrondi binaire des flottants sur des montants monétaires. S'applique à `items.price` et `order_lines.price`.
 
+## Sécurité (RLS)
+
+- RLS activé sur toutes les tables (config projet Supabase "automatic RLS").
+- **Policy v1 : tout utilisateur authentifié a accès complet (lecture/écriture) à toutes les tables.** Pas de restriction par rôle au niveau base de données. Choix assumé pour la vitesse de mise en place initiale — seules deux utilisatrices de confiance (non technophiles) utilisent l'app à ce stade.
+- La distinction SELLER / MANAGER est gérée uniquement côté application : guards de route front + masquage UI, et vérification du rôle dans les endpoints serveur sensibles (ex: modification des prix). Pas de policy RLS par rôle pour l'instant.
+- **À revisiter** si l'app s'ouvre à des utilisateurs moins fiables ou dans un scénario multi-tenant/SaaS — il faudra alors des policies RLS par rôle (ex: un SELLER ne peut pas modifier `items`).
+
 ## Hors scope v1 (pistes futures)
 
 - Multi-tenant / SaaS (table `organizations`, isolation stricte, facturation).

@@ -27,7 +27,7 @@ Statut : figé pour la v1. Toute évolution doit être documentée ici.
 |--------------|------------------------|----------------------------|
 | id           | int, autoincrement, PK |                            |
 | name         | string                 |                            |
-| price        | float                  | prix courant de l'item     |
+| price        | numeric(10,2)          | prix courant de l'item     |
 | description  | string, optionnel      |                            |
 
 ### `events`
@@ -57,7 +57,7 @@ Pas de colonne `total` stockée : dérivée de `order_lines` (`SUM(quantity * pr
 | order_id   | FK → orders.id | PK composite avec item_id                                      |
 | item_id    | FK → items.id  | PK composite avec order_id                                     |
 | quantity   | int            |                                                                  |
-| price      | float          | prix figé au moment de la vente (historique, indépendant du prix courant de `items`) |
+| price      | numeric(10,2)  | prix figé au moment de la vente (historique, indépendant du prix courant de `items`) |
 
 ## Décisions actées
 
@@ -66,6 +66,7 @@ Pas de colonne `total` stockée : dérivée de `order_lines` (`SUM(quantity * pr
 - **Pas de table `item_price_history`** : le prix figé dans `order_lines.price` suffit comme trace historique pour la v1. À revisiter si besoin de reporting fin sur l'évolution des prix (ex: cas SaaS multi-client).
 - **Une commande appartient à un seul événement** (pas de relation many-to-many `orders_to_events`).
 - **`order_lines` utilise une PK composite `(order_id, item_id)`**, pas d'UUID indépendant : dérive naturellement de l'UUID déjà unique de `order_id`, pas de risque de collision offline.
+- **Montants en `numeric(10,2)`, pas `float`** : évite les erreurs d'arrondi binaire des flottants sur des montants monétaires. S'applique à `items.price` et `order_lines.price`.
 
 ## Hors scope v1 (pistes futures)
 

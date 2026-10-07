@@ -8,11 +8,17 @@ const pwaThemeColor = process.env.NUXT_PUBLIC_PWA_THEME_COLOR || '#00ff00'
 const pwaBackgroundColor = process.env.NUXT_PUBLIC_PWA_BACKGROUND_COLOR || '#00ff00'
 
 export default defineNuxtConfig({
-  modules: ['@pinia/nuxt', '@vite-pwa/nuxt', '@nuxt/ui'],
+  modules: ['@pinia/nuxt', '@vite-pwa/nuxt', '@nuxt/ui', '@nuxtjs/supabase'],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   ssr: false,
+  supabase: {
+    url: process.env.SUPABASE_PROJECT_URL,
+    key: process.env.SUPABASE_PUBLISHABLE_KEY,
+    // Redirections gérées à la main via middleware/guard.*.ts, pas par le module.
+    redirect: false
+  },
   pwa: {
     filename: 'pwa-auto-update-sw.js',
     registerType: 'autoUpdate',

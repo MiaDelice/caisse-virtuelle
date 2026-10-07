@@ -8,9 +8,10 @@ const pwaThemeColor = process.env.NUXT_PUBLIC_PWA_THEME_COLOR || '#00ff00'
 const pwaBackgroundColor = process.env.NUXT_PUBLIC_PWA_BACKGROUND_COLOR || '#00ff00'
 
 export default defineNuxtConfig({
-  modules: ['@pinia/nuxt', '@vite-pwa/nuxt'],
+  modules: ['@pinia/nuxt', '@vite-pwa/nuxt', '@nuxt/ui'],
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  css: ['~/assets/css/main.css'],
   ssr: false,
   pwa: {
     filename: 'pwa-auto-update-sw.js',

@@ -33,9 +33,11 @@ async function handleLogout() {
 <template>
   <div class="flex min-h-screen flex-col bg-mia-secondary">
     <header class="flex items-center justify-between bg-mia-primary px-4 py-2">
-      <div class="flex h-10 w-10 items-center justify-center rounded bg-white/50 text-xs text-gray-600">
-        Logo
-      </div>
+      <img
+        src="~/assets/images/logos/logo-black-no-bg.png"
+        alt="Mia Délice"
+        class="h-10 w-10 object-contain"
+      >
 
       <h1 class="text-lg font-semibold">Caisse virtuelle</h1>
 

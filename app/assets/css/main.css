@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@theme {
+  --color-mia-primary: #E6B3B6;
+  --color-mia-secondary: #FFF7F3;
+}

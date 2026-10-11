@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { version as appVersion } from './package.json'
 
 // Couleurs pilotables au build via env vars (utile pour personnaliser par
 // client si ce projet devient multi-tenant un jour) — valeur par défaut
@@ -13,6 +14,15 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],
   ssr: false,
+  runtimeConfig: {
+    public: {
+      appVersion
+    }
+  },
+  // Thème clair uniquement : pas de bascule clair/sombre pour cette app.
+  ui: {
+    colorMode: false
+  },
   supabase: {
     url: process.env.SUPABASE_PROJECT_URL,
     key: process.env.SUPABASE_PUBLISHABLE_KEY,

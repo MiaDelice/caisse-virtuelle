@@ -17,9 +17,10 @@ Statut : figé pour la v1. Toute évolution doit être documentée ici.
 | Colonne       | Type                        | Notes                                      |
 |---------------|-----------------------------|---------------------------------------------|
 | id            | int, autoincrement, PK      |                                             |
-| name          | string                      |                                             |
+| first_name    | string                      |                                             |
+| last_name     | string                      |                                             |
 | role          | enum `SELLER` \| `MANAGER`  |                                             |
-| auth_user_id  | FK → Supabase Auth user     | à détailler lors de l'intégration auth      |
+| auth_user_id  | FK → Supabase Auth user     | lié à `auth.users`, voir Custom Access Token Hook ci-dessous |
 
 ### `items`
 
@@ -67,6 +68,7 @@ Pas de colonne `total` stockée : dérivée de `order_lines` (`SUM(quantity * pr
 - **Une commande appartient à un seul événement** (pas de relation many-to-many `orders_to_events`).
 - **`order_lines` utilise une PK composite `(order_id, item_id)`**, pas d'UUID indépendant : dérive naturellement de l'UUID déjà unique de `order_id`, pas de risque de collision offline.
 - **Montants en `numeric(10,2)`, pas `float`** : évite les erreurs d'arrondi binaire des flottants sur des montants monétaires. S'applique à `items.price` et `order_lines.price`.
+- **`first_name`/`last_name` séparés plutôt qu'un seul champ `name`** : permet un calcul fiable des initiales (première lettre de chaque champ) sans parsing fragile d'un nom complet, robuste aux prénoms/noms composés (ex: "Anne-Marie LEFEVRE").
 
 ## Sécurité (RLS)
 

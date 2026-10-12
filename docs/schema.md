@@ -24,12 +24,13 @@ Statut : figé pour la v1. Toute évolution doit être documentée ici.
 
 ### `items`
 
-| Colonne      | Type                   | Notes                     |
-|--------------|------------------------|----------------------------|
-| id           | int, autoincrement, PK |                            |
-| name         | string                 |                            |
-| price        | numeric(10,2)          | prix courant de l'item     |
-| description  | string, optionnel      |                            |
+| Colonne        | Type                   | Notes                                                        |
+|----------------|------------------------|----------------------------------------------------------------|
+| id             | int, autoincrement, PK |                                                                |
+| name           | string                 |                                                                |
+| price          | numeric(10,2)          | prix courant de l'item                                        |
+| description    | string, optionnel      |                                                                |
+| display_index  | int, unique            | ordre d'affichage dans la vue caisse, indépendant de `id`      |
 
 ### `events`
 
@@ -69,6 +70,7 @@ Pas de colonne `total` stockée : dérivée de `order_lines` (`SUM(quantity * pr
 - **`order_lines` utilise une PK composite `(order_id, item_id)`**, pas d'UUID indépendant : dérive naturellement de l'UUID déjà unique de `order_id`, pas de risque de collision offline.
 - **Montants en `numeric(10,2)`, pas `float`** : évite les erreurs d'arrondi binaire des flottants sur des montants monétaires. S'applique à `items.price` et `order_lines.price`.
 - **`first_name`/`last_name` séparés plutôt qu'un seul champ `name`** : permet un calcul fiable des initiales (première lettre de chaque champ) sans parsing fragile d'un nom complet, robuste aux prénoms/noms composés (ex: "Anne-Marie LEFEVRE").
+- **`items.display_index`** : ordre d'affichage des produits dans la vue caisse, séparé de `id` pour permettre un réordonnancement visuel libre sans toucher à la clé technique référencée par `order_lines`. Contrainte `UNIQUE ... DEFERRABLE INITIALLY IMMEDIATE` : permet de swapper l'index de deux items dans une seule transaction SQL sans passer par une valeur intermédiaire temporaire.
 
 ## Sécurité (RLS)
 

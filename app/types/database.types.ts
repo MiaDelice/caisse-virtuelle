@@ -41,23 +41,29 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          active: boolean
           created_at: string
           end_at: string | null
           id: number
+          is_default: boolean
           name: string
           start_at: string
         }
         Insert: {
+          active?: boolean
           created_at?: string
           end_at?: string | null
           id?: never
+          is_default?: boolean
           name: string
           start_at: string
         }
         Update: {
+          active?: boolean
           created_at?: string
           end_at?: string | null
           id?: never
+          is_default?: boolean
           name?: string
           start_at?: string
         }
@@ -194,6 +200,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_event: { Args: { target_event_id: number }; Returns: undefined }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       swap_items_display_index: {
         Args: {
@@ -339,3 +346,5 @@ export const Constants = {
     Enums: {},
   },
 } as const
+A new version of Supabase CLI is available: v2.121.0 (currently installed v2.120.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli

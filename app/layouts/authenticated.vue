@@ -24,7 +24,11 @@ const menuItems = computed(() => {
   const items: DropdownMenuItem[][] = [[{ label: 'Caisse', to: '/caisse' }]]
 
   if (authUserStore.authenticatedUser?.role === 'MANAGER') {
-    items.push([{ label: 'Gestion produits', to: '/backoffice/items' }])
+    items.push([
+      { label: 'Gestion produits', to: '/backoffice/items' },
+      { label: 'Gestion évènements', to: '/backoffice/events' },
+      { label: 'Historique des commandes', to: '/backoffice/orders-history' }
+    ])
   }
 
   items.push([{ label: 'Déconnexion', icon: LogOutIcon, color: 'error' as const, onSelect: handleLogout }])
@@ -76,7 +80,7 @@ async function handleLogout() {
       </UDropdownMenu>
     </header>
 
-    <main class="flex-1">
+    <main class="flex flex-1 flex-col overflow-hidden">
       <slot />
     </main>
   </div>

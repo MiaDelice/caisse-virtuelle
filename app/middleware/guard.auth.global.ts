@@ -13,6 +13,6 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   if (authUserStore.authenticatedUser && isPublicRoute) {
-    return navigateTo('/')
+    return navigateTo('/caisse')
   }
 })

@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { ChevronDownIcon, LogOutIcon } from 'lucide-vue-next'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 const authUserStore = useAuthUserStore()
 const supabase = useSupabaseClient()
 const { public: { appVersion } } = useRuntimeConfig()
+
+const pageTitle = usePageTitle()
+const route = useRoute()
+
+watch(() => route.fullPath, () => { pageTitle.value = null }, { immediate: true })
+
+const headerTitle = computed(() => pageTitle.value ? `Caisse virtuelle - ${pageTitle.value}` : 'Caisse virtuelle')
 
 const initials = computed(() => {
   const user = authUserStore.authenticatedUser
@@ -13,10 +21,10 @@ const initials = computed(() => {
 })
 
 const menuItems = computed(() => {
-  const items = []
+  const items: DropdownMenuItem[][] = [[{ label: 'Caisse', to: '/caisse' }]]
 
   if (authUserStore.authenticatedUser?.role === 'MANAGER') {
-    items.push([{ label: 'Backoffice', to: '/backoffice' }])
+    items.push([{ label: 'Gestion produits', to: '/backoffice/items' }])
   }
 
   items.push([{ label: 'Déconnexion', icon: LogOutIcon, color: 'error' as const, onSelect: handleLogout }])
@@ -39,7 +47,7 @@ async function handleLogout() {
         class="h-10 w-10 object-contain"
       >
 
-      <h1 class="text-lg font-semibold">Caisse virtuelle</h1>
+      <h1 class="text-lg font-semibold">{{ headerTitle }}</h1>
 
       <UDropdownMenu :items="menuItems">
         <button type="button" class="flex items-center gap-1">

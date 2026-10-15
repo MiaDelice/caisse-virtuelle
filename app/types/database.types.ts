@@ -39,6 +39,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      event_items: {
+        Row: {
+          event_id: number
+          item_id: number
+        }
+        Insert: {
+          event_id: number
+          item_id: number
+        }
+        Update: {
+          event_id?: number
+          item_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           active: boolean
@@ -201,6 +231,50 @@ export type Database = {
     }
     Functions: {
       activate_event: { Args: { target_event_id: number }; Returns: undefined }
+      create_event: {
+        Args: {
+          event_end_at: string
+          event_name: string
+          event_start_at: string
+          sellable_item_ids: number[]
+        }
+        Returns: {
+          active: boolean
+          created_at: string
+          end_at: string | null
+          id: number
+          is_default: boolean
+          name: string
+          start_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "events"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_item: {
+        Args: {
+          item_description: string
+          item_name: string
+          item_price: number
+        }
+        Returns: {
+          created_at: string
+          description: string | null
+          display_index: number
+          id: number
+          name: string
+          price: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       swap_items_display_index: {
         Args: {
@@ -208,6 +282,14 @@ export type Database = {
           first_index: number
           second_id: number
           second_index: number
+        }
+        Returns: undefined
+      }
+      update_event: {
+        Args: {
+          event_name: string
+          sellable_item_ids: number[]
+          target_event_id: number
         }
         Returns: undefined
       }

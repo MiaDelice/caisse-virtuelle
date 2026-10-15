@@ -9,14 +9,27 @@ const props = defineProps<{
 
 const open = defineModel<boolean>('open', { default: false })
 
-const { mutate: updateItem, isLoading } = useUpdateItemMutation()
+const isCreateMode = computed(() => props.item === null)
+
+const { mutateAsync: updateItem, isLoading: isUpdating } = useUpdateItemMutation()
+const { mutateAsync: createItem, isLoading: isCreating } = useCreateItemMutation()
+const isLoading = computed(() => isUpdating.value || isCreating.value)
 
 const name = ref('')
 const price = ref('0.00')
 const description = ref('')
 
+function resetForm() {
+  name.value = ''
+  price.value = '0.00'
+  description.value = ''
+}
+
 watch(() => props.item, (item) => {
-  if (!item) return
+  if (!item) {
+    resetForm()
+    return
+  }
   name.value = item.name
   price.value = item.price.toFixed(2)
   description.value = item.description ?? ''
@@ -27,25 +40,28 @@ function formatPrice() {
   price.value = Number.isFinite(parsed) ? parsed.toFixed(2) : '0.00'
 }
 
-function handleSave() {
-  if (!props.item) return
-
+async function handleSave() {
   formatPrice()
 
-  updateItem(
-    {
-      id: props.item.id,
-      name: name.value,
-      price: Number.parseFloat(price.value),
-      description: description.value || null
-    },
-    { onSuccess: () => { open.value = false } }
-  )
+  if (isCreateMode.value) {
+    await createItem({ name: name.value, price: Number.parseFloat(price.value), description: description.value || null })
+    resetForm()
+    open.value = false
+    return
+  }
+
+  await updateItem({
+    id: props.item!.id,
+    name: name.value,
+    price: Number.parseFloat(price.value),
+    description: description.value || null
+  })
+  open.value = false
 }
 </script>
 
 <template>
-  <UModal v-model:open="open" title="Modifier le produit">
+  <UModal v-model:open="open" :title="isCreateMode ? 'Créer un produit' : 'Modifier le produit'">
     <template #body>
       <div class="flex flex-col gap-4">
         <UFormField label="Nom">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlusIcon } from 'lucide-vue-next'
+import { PlusIcon, PencilIcon } from 'lucide-vue-next'
 import type { Database } from '~/types/database.types'
 
 type Event = Database['public']['Tables']['events']['Row']
@@ -13,6 +13,14 @@ const { mutate: activateEvent } = useActivateEventMutation()
 const { confirm, info } = useAppModals()
 
 const isCreateModalOpen = ref(false)
+
+const editingEvent = ref<Event | null>(null)
+const isEditModalOpen = ref(false)
+
+function startEditing(event: Event) {
+  editingEvent.value = event
+  isEditModalOpen.value = true
+}
 
 function formatDate(value: string | null) {
   if (!value) return '—'
@@ -60,6 +68,7 @@ async function handleRowClick(event: Event) {
           <th class="py-2">Date</th>
           <th class="py-2">Créé le</th>
           <th class="py-2">Actif</th>
+          <th class="py-2" />
         </tr>
       </thead>
       <tbody>
@@ -82,10 +91,20 @@ async function handleRowClick(event: Event) {
               {{ event.active ? 'Actif' : 'Inactif' }}
             </UBadge>
           </td>
+          <td class="py-2">
+            <UButton
+              :icon="PencilIcon"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              @click.stop="startEditing(event)"
+            />
+          </td>
         </tr>
       </tbody>
     </table>
 
     <EventCreateModal v-model:open="isCreateModalOpen" />
+    <EventEditModal v-model:open="isEditModalOpen" :event="editingEvent" />
   </div>
 </template>

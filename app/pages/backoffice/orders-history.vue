@@ -15,32 +15,6 @@ watch(events, (newEvents) => {
 
 const showEventColumn = computed(() => selectedEventIds.value.length >= 2)
 
-const SELECT_ALL_ID = -1
-
-const selectMenuItems = computed(() => [
-  { id: SELECT_ALL_ID, name: 'Tous' },
-  ...(events.value ?? [])
-])
-
-const selectAllState = computed(() => {
-  const total = events.value?.length ?? 0
-  const selected = selectedEventIds.value.length
-  if (selected === 0) return 'unchecked'
-  if (selected === total) return 'checked'
-  return 'indeterminate'
-})
-
-function handleSelectMenuUpdate(value: number[]) {
-  const toggledSelectAll = value.includes(SELECT_ALL_ID)
-
-  if (toggledSelectAll) {
-    selectedEventIds.value = selectAllState.value === 'checked' ? [] : (events.value ?? []).map((e) => e.id)
-    return
-  }
-
-  selectedEventIds.value = value
-}
-
 const { data: orders } = useOrdersHistoryQuery(selectedEventIds)
 
 const selectedOrderId = ref<string | null>(null)
@@ -56,28 +30,15 @@ const total = computed<number>(() =>
 
 <template>
   <div class="p-4">
-    <div class="flex flex-row justify-between ">
-      <USelectMenu :model-value="selectedEventIds" multiple :items="selectMenuItems" value-key="id" label-key="name"
-        class="mb-4 w-64" @update:model-value="handleSelectMenuUpdate">
-        <template #default>
-          <span class="block w-full truncate text-left">
-            <template v-if="selectedEventIds.length === 0">Sélectionner des évènements</template>
-            <template v-else-if="selectedEventIds.length === 1">
-              {{events?.find((e) => e.id === selectedEventIds[0])?.name}}
-            </template>
-            <template v-else>{{ selectedEventIds.length }} sélectionnés</template>
-          </span>
-        </template>
-
-        <template #item-leading="{ item }">
-          <input v-if="item.id === SELECT_ALL_ID" type="checkbox" :checked="selectAllState === 'checked'"
-            :indeterminate="selectAllState === 'indeterminate'" class="pointer-events-none">
-          <input v-else type="checkbox" :checked="selectedEventIds.includes(item.id)" class="pointer-events-none">
-        </template>
-      </USelectMenu>
+    <div class="flex flex-row justify-between">
+      <UiMultiSelectWithAll
+        v-model="selectedEventIds"
+        :options="events ?? []"
+        placeholder="Sélectionner des évènements"
+        class="mb-4 w-64"
+      />
       <span class="underline underline-offset-2 text-lg">Recette totale: {{ total.toFixed(2) }}€</span>
     </div>
-
 
     <p v-if="selectedEventIds.length === 0" class="text-md text-gray-500 text-center">
       Aucun évènement sélectionné.
@@ -94,7 +55,7 @@ const total = computed<number>(() =>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="order in orders" :key="order.id" class=" cursor-pointer border-b border-gray-100 hover:bg-gray-50"
+        <tr v-for="order in orders" :key="order.id" class="cursor-pointer border-b border-gray-100 hover:bg-gray-50"
           @click="selectedOrderId = order.id">
           <td class="py-2">{{ formatDate(order.createdAt) }}</td>
           <td class="py-2">{{ order.sellerFirstName }} {{ order.sellerLastName }}</td>

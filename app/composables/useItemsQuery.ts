@@ -22,6 +22,24 @@ export function useItemsQuery() {
   })
 }
 
+export function useCreateItemMutation() {
+  const supabase = useSupabaseClient<Database>()
+  const queryCache = useQueryCache()
+
+  return useMutation({
+    mutation: async (item: Pick<Item, 'name' | 'price' | 'description'>) => {
+      const { error } = await supabase.rpc('create_item', {
+        item_name: item.name,
+        item_price: item.price,
+        item_description: item.description ?? ''
+      })
+
+      if (error) throw error
+    },
+    onSettled: () => queryCache.invalidateQueries({ key: ITEMS_QUERY_KEY })
+  })
+}
+
 export function useUpdateItemMutation() {
   const supabase = useSupabaseClient<Database>()
   const queryCache = useQueryCache()

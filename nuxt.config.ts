@@ -26,6 +26,9 @@ export default defineNuxtConfig({
   supabase: {
     url: process.env.SUPABASE_PROJECT_URL,
     key: process.env.SUPABASE_PUBLISHABLE_KEY,
+    // Clé admin, strictement côté serveur (jamais dans runtimeConfig.public).
+    // Utilisée uniquement par server/api/users pour créer des comptes Auth.
+    serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     // Redirections gérées à la main via middleware/guard.*.ts, pas par le module.
     redirect: false
   },

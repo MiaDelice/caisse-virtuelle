@@ -204,6 +204,7 @@ export type Database = {
           created_at: string
           first_name: string
           id: number
+          is_active: boolean
           last_name: string
           role: string
         }
@@ -212,6 +213,7 @@ export type Database = {
           created_at?: string
           first_name: string
           id?: never
+          is_active?: boolean
           last_name: string
           role: string
         }
@@ -220,6 +222,7 @@ export type Database = {
           created_at?: string
           first_name?: string
           id?: never
+          is_active?: boolean
           last_name?: string
           role?: string
         }

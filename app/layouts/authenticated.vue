@@ -27,6 +27,7 @@ const menuItems = computed(() => {
     items.push([
       { label: 'Gestion produits', to: '/backoffice/items' },
       { label: 'Gestion évènements', to: '/backoffice/events' },
+      { label: 'Gestion utilisateurs', to: '/backoffice/users' },
       { label: 'Historique des commandes', to: '/backoffice/orders-history' }
     ])
   }

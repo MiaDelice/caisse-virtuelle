@@ -34,6 +34,7 @@
     "@tiptap/suggestion": "^3.31.4",
     "@tiptap/vue-3": "^3.31.4",
     "@vite-pwa/nuxt": "^1.1.1",
+    "idb-keyval": "^6.3.0",
     "jwt-decode": "^4.0.0",
     "lucide-vue-next": "^1.0.0",
     "nuxt": "^4.5.2",

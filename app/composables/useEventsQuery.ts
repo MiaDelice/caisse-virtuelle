@@ -16,7 +16,13 @@ export function useEventsQuery() {
         .select('*')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        const cached = await getCachedEvents<Event[]>()
+        if (cached) return cached
+        throw error
+      }
+
+      await cacheEvents(data)
       return data
     }
   })
@@ -34,8 +40,15 @@ export function useEventItemsQuery(eventId: Ref<number | null>) {
         .select('item_id')
         .eq('event_id', eventId.value!)
 
-      if (error) throw error
-      return data.map((row) => row.item_id)
+      if (error) {
+        const cached = await getCachedEventItems(eventId.value!)
+        if (cached) return cached
+        throw error
+      }
+
+      const itemIds = data.map((row) => row.item_id)
+      await cacheEventItems(eventId.value!, itemIds)
+      return itemIds
     }
   })
 }

@@ -8,6 +8,7 @@ definePageMeta({ layout: 'authenticated' })
 usePageTitle().value = 'Caisse'
 
 const basketStore = useBasketStore()
+const { data: events } = useEventsQuery()
 const { mutate: submitOrder, isLoading: isSubmitting } = useSubmitOrderMutation()
 
 const isEditModalOpen = ref(false)
@@ -18,7 +19,11 @@ function handleSelectItem(item: Item) {
 
 function handleValidate() {
   if (basketStore.lines.length === 0) return
-  submitOrder(basketStore.lines)
+
+  const activeEventId = events.value?.find((e) => e.active)?.id
+  if (!activeEventId) return
+
+  submitOrder({ lines: basketStore.lines, eventId: activeEventId })
 }
 </script>
 

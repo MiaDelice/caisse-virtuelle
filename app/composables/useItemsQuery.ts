@@ -16,7 +16,13 @@ export function useItemsQuery() {
         .select('*')
         .order('display_index', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        const cached = await getCachedItems<Item[]>()
+        if (cached) return cached
+        throw error
+      }
+
+      await cacheItems(data)
       return data
     }
   })

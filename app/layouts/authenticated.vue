@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import { ChevronDownIcon, LogOutIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, LogOutIcon, RefreshCwIcon } from 'lucide-vue-next'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
 const authUserStore = useAuthUserStore()
 const supabase = useSupabaseClient()
 const { public: { appVersion } } = useRuntimeConfig()
+
+const isOnline = useOnlineStatus()
+const offlineQueue = useOfflineOrderQueueStore()
+const { sync } = useOfflineOrderSync()
+
+onMounted(() => offlineQueue.hydrate())
+
+watch(isOnline, (online, wasOnline) => {
+  if (online && !wasOnline) void sync()
+})
 
 const pageTitle = usePageTitle()
 const route = useRoute()
@@ -31,6 +41,12 @@ const menuItems = computed(() => {
       { label: 'Historique des commandes', to: '/backoffice/orders-history' }
     ])
   }
+
+  items.push([{
+    label: offlineQueue.pendingCount > 0 ? `Synchroniser (${offlineQueue.pendingCount})` : 'Synchroniser',
+    icon: RefreshCwIcon,
+    onSelect: () => sync()
+  }])
 
   items.push([{ label: 'Déconnexion', icon: LogOutIcon, color: 'error' as const, onSelect: handleLogout }])
 

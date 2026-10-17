@@ -164,18 +164,21 @@ export type Database = {
       }
       orders: {
         Row: {
+          cancelled_at: string | null
           created_at: string
           event_id: number
           id: string
           user_id: number
         }
         Insert: {
+          cancelled_at?: string | null
           created_at?: string
           event_id: number
           id: string
           user_id: number
         }
         Update: {
+          cancelled_at?: string | null
           created_at?: string
           event_id?: number
           id?: string

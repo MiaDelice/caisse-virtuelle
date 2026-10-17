@@ -18,13 +18,16 @@ const showEventColumn = computed(() => selectedEventIds.value.length >= 2)
 const { data: orders } = useOrdersHistoryQuery(selectedEventIds)
 
 const selectedOrderId = ref<string | null>(null)
+const selectedOrderIsCancelled = computed(() =>
+  orders.value?.find((order) => order.id === selectedOrderId.value)?.cancelledAt != null
+)
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })
 }
 
 const total = computed<number>(() =>
-  orders.value?.reduce((sum, order) => sum + order.total, 0) ?? 0
+  orders.value?.filter((order) => !order.cancelledAt).reduce((sum, order) => sum + order.total, 0) ?? 0
 )
 </script>
 
@@ -52,20 +55,33 @@ const total = computed<number>(() =>
           <th v-if="showEventColumn" class="py-2">Évènement</th>
           <th class="py-2">Quantité</th>
           <th class="py-2">Total</th>
+          <th class="py-2">Statut</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="order in orders" :key="order.id" class="cursor-pointer border-b border-gray-100 hover:bg-gray-50"
-          @click="selectedOrderId = order.id">
-          <td class="py-2">{{ formatDate(order.createdAt) }}</td>
-          <td class="py-2">{{ order.sellerFirstName }} {{ order.sellerLastName }}</td>
-          <td v-if="showEventColumn" class="py-2">{{ order.eventName }}</td>
-          <td class="py-2">{{ order.quantity }}</td>
-          <td class="py-2">{{ order.total.toFixed(2) }}€</td>
+        <tr
+          v-for="order in orders"
+          :key="order.id"
+          class="cursor-pointer border-b border-gray-100 hover:bg-gray-50"
+          :class="order.cancelledAt ? 'text-gray-400' : ''"
+          @click="selectedOrderId = order.id"
+        >
+          <td class="py-2" :class="order.cancelledAt ? 'line-through' : ''">{{ formatDate(order.createdAt) }}</td>
+          <td class="py-2" :class="order.cancelledAt ? 'line-through' : ''">
+            {{ order.sellerFirstName }} {{ order.sellerLastName }}
+          </td>
+          <td v-if="showEventColumn" class="py-2" :class="order.cancelledAt ? 'line-through' : ''">
+            {{ order.eventName }}
+          </td>
+          <td class="py-2" :class="order.cancelledAt ? 'line-through' : ''">{{ order.quantity }}</td>
+          <td class="py-2" :class="order.cancelledAt ? 'line-through' : ''">{{ order.total.toFixed(2) }}€</td>
+          <td class="py-2">
+            <UBadge v-if="order.cancelledAt" color="error" variant="subtle">Annulée</UBadge>
+          </td>
         </tr>
       </tbody>
     </table>
 
-    <OrderDetailModal v-model:order-id="selectedOrderId" />
+    <OrderDetailModal v-model:order-id="selectedOrderId" :is-cancelled="selectedOrderIsCancelled" />
   </div>
 </template>

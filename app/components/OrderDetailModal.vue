@@ -1,7 +1,13 @@
 <script setup lang="ts">
+const props = defineProps<{
+  isCancelled?: boolean
+}>()
+
 const orderId = defineModel<string | null>('orderId', { default: null })
 
 const { data: lines, isLoading } = useOrderDetailQuery(orderId)
+const { mutateAsync: cancelOrder, isLoading: isCancelling } = useCancelOrderMutation()
+const { confirm } = useAppModals()
 
 const total = computed(() =>
   lines.value?.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0) ?? 0
@@ -9,6 +15,19 @@ const total = computed(() =>
 
 function handleClose() {
   orderId.value = null
+}
+
+async function handleCancelOrder() {
+  if (!orderId.value) return
+
+  const confirmed = await confirm(
+    'Annuler cette commande ?',
+    'Elle sera exclue des totaux mais restera visible dans l\'historique.'
+  )
+  if (!confirmed) return
+
+  await cancelOrder(orderId.value)
+  handleClose()
 }
 </script>
 
@@ -37,7 +56,18 @@ function handleClose() {
     </template>
 
     <template #footer>
-      <div class="flex justify-end">
+      <div class="flex w-full justify-between">
+        <UButton
+          v-if="!props.isCancelled"
+          color="error"
+          variant="soft"
+          :loading="isCancelling"
+          @click="handleCancelOrder"
+        >
+          Annuler la commande
+        </UButton>
+        <div v-else />
+
         <UButton color="primary" @click="handleClose">
           Ok
         </UButton>

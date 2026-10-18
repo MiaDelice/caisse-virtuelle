@@ -12,6 +12,7 @@ const { data: events } = useEventsQuery()
 const { mutate: submitOrder, isLoading: isSubmitting } = useSubmitOrderMutation()
 
 const isEditModalOpen = ref(false)
+const isCashModalOpen = ref(false)
 
 function handleSelectItem(item: Item) {
   basketStore.addItem(item)
@@ -71,6 +72,14 @@ function handleValidate() {
         </button>
         <button
           type="button"
+          class="w-full rounded-xl border-2 border-success py-2 text-success"
+          :disabled="basketStore.lines.length === 0 || isSubmitting"
+          @click="isCashModalOpen = true"
+        >
+          Espèces
+        </button>
+        <button
+          type="button"
           class="w-full rounded-xl bg-success py-2"
           :disabled="basketStore.lines.length === 0 || isSubmitting"
           @click="handleValidate"
@@ -81,5 +90,6 @@ function handleValidate() {
     </div>
 
     <BasketEditModal v-model:open="isEditModalOpen" />
+    <CashPaymentModal v-model:open="isCashModalOpen" @validate="handleValidate" />
   </div>
 </template>
